@@ -1,0 +1,174 @@
+@prefix lab:  <http://example.org/lab#> .
+@prefix data: <http://example.org/lab/data/> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+##########################################
+# PART 1: VOCABULARY (RDFS)
+##########################################
+
+# ---- Classes ----
+lab:Equipment           a rdfs:Class ; rdfs:label "Equipment" .
+lab:Microscope          a rdfs:Class ; rdfs:label "Microscope" ;
+                        rdfs:subClassOf lab:Equipment .
+lab:Printer3D           a rdfs:Class ; rdfs:label "3D Printer" ;
+                        rdfs:subClassOf lab:Equipment .
+lab:Room                a rdfs:Class ; rdfs:label "Room" .
+lab:Person              a rdfs:Class ; rdfs:label "Person" .
+lab:Researcher          a rdfs:Class ; rdfs:label "Researcher" ;
+                        rdfs:subClassOf lab:Person .
+lab:Technician          a rdfs:Class ; rdfs:label "Technician" ;
+                        rdfs:subClassOf lab:Person .
+lab:Project             a rdfs:Class ; rdfs:label "Project" .
+lab:TrainingCertificate a rdfs:Class ; rdfs:label "Training Certificate" .
+lab:Booking             a rdfs:Class ; rdfs:label "Booking" .
+lab:MaintenanceEvent    a rdfs:Class ; rdfs:label "Maintenance Event" .
+
+# ---- Properties (domain and range) ----
+lab:bookedEquipment a rdf:Property ;
+    rdfs:label "booked equipment" ;
+    rdfs:domain lab:Booking ;
+    rdfs:range  lab:Equipment .
+
+lab:bookedBy a rdf:Property ;
+    rdfs:label "booked by" ;
+    rdfs:domain lab:Booking ;
+    rdfs:range  lab:Researcher .
+
+lab:bookingDate a rdf:Property ;
+    rdfs:label "booking date" ;
+    rdfs:domain lab:Booking ;
+    rdfs:range  xsd:date .
+
+lab:locatedIn a rdf:Property ;
+    rdfs:label "located in" ;
+    rdfs:domain lab:Equipment ;
+    rdfs:range  lab:Room .
+
+lab:worksOn a rdf:Property ;
+    rdfs:label "works on" ;
+    rdfs:domain lab:Researcher ;
+    rdfs:range  lab:Project .
+
+lab:holdsCertificate a rdf:Property ;
+    rdfs:label "holds certificate" ;
+    rdfs:domain lab:Researcher ;
+    rdfs:range  lab:TrainingCertificate .
+
+lab:certifiesFor a rdf:Property ;
+    rdfs:label "certifies for" ;
+    rdfs:domain lab:TrainingCertificate ;
+    rdfs:range  lab:Equipment .
+
+lab:responsibleTechnician a rdf:Property ;
+    rdfs:label "responsible technician" ;
+    rdfs:domain lab:Equipment ;
+    rdfs:range  lab:Technician .
+
+lab:maintenanceOf a rdf:Property ;
+    rdfs:label "maintenance of" ;
+    rdfs:domain lab:MaintenanceEvent ;
+    rdfs:range  lab:Equipment .
+
+lab:maintenanceDate a rdf:Property ;
+    rdfs:label "maintenance date" ;
+    rdfs:domain lab:MaintenanceEvent ;
+    rdfs:range  xsd:date .
+
+lab:equipmentStatus a rdf:Property ;
+    rdfs:label "equipment status" ;
+    rdfs:domain lab:Equipment ;
+    rdfs:range  xsd:string .
+
+##########################################
+# PART 2: INSTANCE DATA
+##########################################
+
+# ---- Rooms ----
+data:R201 a lab:Room ; rdfs:label "Room R201" .
+data:R204 a lab:Room ; rdfs:label "Room R204" .
+
+# ---- Technician ----
+data:Ravi a lab:Technician ; rdfs:label "Ravi" .
+
+# ---- Equipment ----
+data:M1 a lab:Microscope ;
+    rdfs:label "Microscope M1" ;
+    lab:locatedIn data:R201 ;
+    lab:responsibleTechnician data:Ravi ;
+    lab:equipmentStatus "Available" .
+
+data:M2 a lab:Microscope ;
+    rdfs:label "Microscope M2" ;
+    lab:locatedIn data:R201 ;
+    lab:responsibleTechnician data:Ravi ;
+    lab:equipmentStatus "Under maintenance" .
+
+data:P1 a lab:Printer3D ;
+    rdfs:label "3D Printer P1" ;
+    lab:locatedIn data:R204 ;
+    lab:responsibleTechnician data:Ravi ;
+    lab:equipmentStatus "Available" .
+
+# ---- Projects ----
+data:BioFilm        a lab:Project ; rdfs:label "BioFilm" .
+data:SmartMaterials a lab:Project ; rdfs:label "SmartMaterials" .
+
+# ---- Researchers ----
+data:Anu a lab:Researcher ;
+    rdfs:label "Anu" ;
+    lab:worksOn data:BioFilm ;
+    lab:holdsCertificate data:Cert1 .
+
+data:Farhan a lab:Researcher ;
+    rdfs:label "Farhan" ;
+    lab:worksOn data:SmartMaterials ;
+    lab:holdsCertificate data:Cert2 , data:Cert3 .
+
+data:Meera a lab:Researcher ;
+    rdfs:label "Meera" ;
+    lab:worksOn data:BioFilm ;
+    lab:holdsCertificate data:Cert4 .
+
+# ---- Training certificates ----
+data:Cert1 a lab:TrainingCertificate ;
+    rdfs:label "Microscope M1 training (Anu)" ;
+    lab:certifiesFor data:M1 .
+
+data:Cert2 a lab:TrainingCertificate ;
+    rdfs:label "Microscope M1 training (Farhan)" ;
+    lab:certifiesFor data:M1 .
+
+data:Cert3 a lab:TrainingCertificate ;
+    rdfs:label "3D Printer P1 training (Farhan)" ;
+    lab:certifiesFor data:P1 .
+
+data:Cert4 a lab:TrainingCertificate ;
+    rdfs:label "Microscope M2 training (Meera)" ;
+    lab:certifiesFor data:M2 .
+
+# ---- Bookings ----
+data:Booking1 a lab:Booking ;
+    rdfs:label "Booking 1" ;
+    lab:bookedEquipment data:M1 ;
+    lab:bookedBy data:Anu ;
+    lab:bookingDate "2026-10-12"^^xsd:date .
+
+data:Booking2 a lab:Booking ;
+    rdfs:label "Booking 2" ;
+    lab:bookedEquipment data:P1 ;
+    lab:bookedBy data:Farhan ;
+    lab:bookingDate "2026-10-13"^^xsd:date .
+
+data:Booking3 a lab:Booking ;
+    rdfs:label "Booking 3" ;
+    lab:bookedEquipment data:M2 ;
+    lab:bookedBy data:Meera ;
+    lab:bookingDate "2026-10-15"^^xsd:date .
+
+# ---- Maintenance event ----
+data:Maint1 a lab:MaintenanceEvent ;
+    rdfs:label "Maintenance of M2" ;
+    lab:maintenanceOf data:M2 ;
+    lab:maintenanceDate "2026-10-20"^^xsd:date .
